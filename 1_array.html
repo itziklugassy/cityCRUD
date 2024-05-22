@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Cards CRUD</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .card {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin: 16px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            width: 200px; /* Set the desired width */
+            height: 150px; /* Set the desired height */
+            object-fit: cover; /* Ensure the image covers the area without distortion */
+        }
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        .card-description {
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+        .card-ranking {
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+        .card-air {
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+        .card-actions {
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container"></div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        const cities = JSON.parse(localStorage.getItem('cities')) || [
+            {
+                name: 'New York',
+                image: 'https://cdn.britannica.com/61/93061-050-99147DCE/Statue-of-Liberty-Island-New-York-Bay.jpg',
+                description: 'The city that never sleeps.',
+                ranking: 5,
+                air: 8
+            },
+            {
+                name: 'Toronto',
+                image: 'https://cdn.britannica.com/35/100235-050-CE3936EE/view-CN-Tower-Toronto-skyline-observation-deck.jpg',
+                description: 'The capital city of Ontario.',
+                ranking: 4,
+                air: 7
+            },
+            {
+                name: 'Tel Aviv',
+                image: 'https://i0.wp.com/www.touristisrael.com/wp-content/uploads/2012/12/shutterstock_415012924-scaled.jpg?fit=400%2C266&ssl=1',
+                description: 'The financial and technological hub of Israel.',
+                ranking: 5,
+                air: 6
+            },
+            {
+                name: 'Jerusalem',
+                image: 'https://i0.wp.com/www.touristisrael.com/wp-content/uploads/2011/02/jerusalem-purple.jpg?resize=1024%2C683&ssl=1',
+                description: 'A city with rich history and cultural significance.',
+                ranking: 5,
+                air: 9
+            }
+        ];
+
+        function saveCities() {
+            localStorage.setItem('cities', JSON.stringify(cities));
+        }
+
+        function renderCities() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            cities.forEach((city, index) => {
+                const cityCard = document.createElement('div');
+                cityCard.className = 'card';
+
+                cityCard.innerHTML = `
+                    <img src="${city.image}" alt="${city.name}">
+                    <div class="card-title">${city.name}</div>
+                    <div class="card-description">${city.description}</div>
+                    <div class="card-ranking">Ranking: ${city.ranking}</div>
+                    <div class="card-air">Air quality: ${city.air}</div>
+                    <div class="card-actions">
+                        <button class="btn btn-warning" onclick="editCity(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCity(${index})">Delete</button>
+                    </div>
+                `;
+
+                app.appendChild(cityCard);
+            });
+            const addButton = document.createElement('button');
+            addButton.type = 'button';
+            addButton.className = 'btn btn-primary';
+            addButton.textContent = 'Add City';
+            addButton.onclick = addCity;
+            app.appendChild(addButton);
+        }
+
+        function addCity() {
+            const name = prompt('Enter city name:');
+            const image = prompt('Enter city image URL:');
+            const description = prompt('Enter city description:');
+            const ranking = prompt('Enter city ranking (1-5):');
+            const air = prompt('Enter air quality (1-10):');
+            if (name && image && description && ranking && air) {
+                cities.push({ name, image, description, ranking: parseInt(ranking), air: parseInt(air) });
+                saveCities();
+                renderCities();
+            }
+        }
+
+        function editCity(index) {
+            const city = cities[index];
+            const name = prompt('Edit city name:', city.name);
+            const image = prompt('Edit city image URL:', city.image);
+            const description = prompt('Edit city description:', city.description);
+            const ranking = prompt('Edit city ranking (1-5):', city.ranking);
+            const air = prompt('Edit air quality (1-10):', city.air);
+            if (name && image && description && ranking && air) {
+                cities[index] = { name, image, description, ranking: parseInt(ranking), air: parseInt(air) };
+                saveCities();
+                renderCities();
+            }
+        }
+
+        function deleteCity(index) {
+            if (confirm('Are you sure you want to delete this city?')) {
+                cities.splice(index, 1);
+                saveCities();
+                renderCities();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCities);
+    </script>
+</body>
+</html>
